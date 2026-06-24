@@ -1,11 +1,14 @@
 import styled from "styled-components";
 import { formatCurrency } from "../../utils/helpers";
-import { useMutation } from "@tanstack/react-query";
-import { useQueryClient } from "@tanstack/react-query";
-import { deleteCabin } from "../../services/apiCabins";
-import toast from "react-hot-toast";
 import { useState } from "react";
 import CreatCabinForm from "./CreateCabinForm.jsx";
+import { useDeleteCabin } from "./useDeleteCabin.js";
+import {
+  DocumentDuplicateIcon,
+  PencilIcon,
+  TrashIcon,
+} from "@heroicons/react/16/solid";
+import { useCreateCabin } from "./useCreateCabin.js";
 // v1
 const TableRow = styled.div`
   display: grid;
@@ -49,18 +52,18 @@ const Discount = styled.div`
 
 function CabinRow({ cabin }) {
   const [isEdiiting, setIsEditing] = useState(false);
+  const { isDeleting, deleteCabinMutation } = useDeleteCabin();
+  const { isCreating, createCabin } = useCreateCabin();
   const { id, name, image, maxCapacity, regularPrice, discount } = cabin;
-  const queryClient = useQueryClient();
-  const { mutate: deleteCabinMutation, isLoading: isDeleting } = useMutation({
-    mutationFn: (id) => deleteCabin(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cabins"] });
-      toast.success("Cabin deleted successfully");
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
+  function handleDuplicate() {
+    createCabin({
+      name: `Copy of ${name}`,
+      image,
+      maxCapacity,
+      regularPrice,
+      discount,
+    });
+  }
   return (
     <>
       <TableRow role="row">
@@ -70,10 +73,26 @@ function CabinRow({ cabin }) {
         <Price>{formatCurrency(regularPrice)}</Price>
         <Discount>{discount}%</Discount>
         <div>
-          <button onClick={() => deleteCabinMutation(id)} disabled={isDeleting}>
-            Delete
+          <button
+            disabled={isEdiiting}
+            onClick={() => setIsEditing((prev) => !prev)}
+          >
+            <PencilIcon style={{ width: "1.8rem", height: "1.8rem" }} />
           </button>
-          <button onClick={() => setIsEditing((prev) => !prev)}>Edit</button>
+          <button disabled={isDeleting} onClick={() => deleteCabinMutation(id)}>
+            <TrashIcon
+              style={{
+                width: "1.8rem",
+                height: "1.8rem",
+                color: "var(--color-red-700)",
+              }}
+            />
+          </button>
+          <button disabled={isCreating} onClick={() => handleDuplicate()}>
+            <DocumentDuplicateIcon
+              style={{ width: "1.8rem", height: "1.8rem" }}
+            />
+          </button>
         </div>
       </TableRow>
       {isEdiiting && <CreatCabinForm editingCabin={cabin} />}

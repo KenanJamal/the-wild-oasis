@@ -6,55 +6,41 @@ import Form from "../../ui/Form";
 import Button from "../../ui/Button";
 import FileInput from "../../ui/FileInput";
 import { Textarea } from "../../ui/Textarea";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { insertCabin } from "../../services/apiCabins";
-import toast from "react-hot-toast";
-import { is } from "date-fns/locale";
+import { useEditCabins } from "./useEditCabins";
+import { useCreateCabin } from "./useCreateCabin";
 
 function CreateCabinForm({ editingCabin = {} }) {
+  const { editCabin, isEditing } = useEditCabins();
+  const { createCabin, isCreating } = useCreateCabin();
   const { id: editId, ...editValues } = editingCabin;
+
   const isEdiiting = Boolean(editId);
   const { register, handleSubmit, reset, formState } = useForm({
     defaultValues: isEdiiting ? editValues : {},
   });
-  const queryClient = useQueryClient();
   const { errors } = formState;
-  const {
-    mutate: editCabin,
 
-    isLoading: isEditing,
-  } = useMutation({
-    mutationFn: ({ newCabinData, id }) => insertCabin(newCabinData, id),
-    onSuccess: () => {
-      toast.success("Cabin edited successfully");
-      queryClient.invalidateQueries({ queryKey: ["cabins"] });
-      reset();
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
-  const {
-    mutate: createCabin,
-
-    isLoading: isCreating,
-  } = useMutation({
-    mutationFn: insertCabin,
-    onSuccess: () => {
-      toast.success("Cabin created successfully");
-      queryClient.invalidateQueries({ queryKey: ["cabins"] });
-      reset();
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
   const isWorking = isCreating || isEditing;
   function handleSubmitForm(data) {
     const image = typeof data.image === "string" ? data.image : data.image[0];
-    if (!isEdiiting) createCabin({ ...data, image });
+    if (!isEdiiting)
+      createCabin(
+        { ...data, image },
+        {
+          onSuccess: () => {
+            reset();
+          },
+        },
+      );
     else {
-      editCabin({ newCabinData: { ...data, image }, id: editId });
+      editCabin(
+        { newCabinData: { ...data, image }, id: editId },
+        {
+          onSuccess: () => {
+            reset();
+          },
+        },
+      );
     }
   }
   function onError(errors) {
@@ -93,7 +79,7 @@ function CreateCabinForm({ editingCabin = {} }) {
           id="regularPrice"
           disabled={isWorking}
           {...register("regularPrice", {
-            required: "This field is required",
+            required: isEdiiting ? false : "This field is required",
             min: {
               value: 200,
               message: "Price should be at least 200",
@@ -107,7 +93,7 @@ function CreateCabinForm({ editingCabin = {} }) {
           id="discount"
           disabled={isWorking}
           {...register("discount", {
-            required: "This field is required",
+            required: isEdiiting ? false : "This field is required",
             validate: (value) =>
               value < 100 || "Discount should be less than 100 %",
           })}
@@ -123,7 +109,7 @@ function CreateCabinForm({ editingCabin = {} }) {
           id="description"
           disabled={isWorking}
           {...register("description", {
-            required: "This field is required",
+            required: isEdiiting ? false : "This field is required",
           })}
         />
       </FormRow>
@@ -132,7 +118,7 @@ function CreateCabinForm({ editingCabin = {} }) {
           id="image"
           disabled={isWorking}
           {...register("image", {
-            required: "This field is required",
+            required: isEdiiting ? false : "This field is required",
           })}
         />
       </FormRow>

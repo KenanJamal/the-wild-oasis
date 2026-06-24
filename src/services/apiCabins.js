@@ -35,6 +35,7 @@ export async function insertCabin(newCabin, id) {
   }
 
   // upload image to storage
+  if (hasImagePath) return data;
   const { error: uploadError } = await supabase.storage
     .from("cabins-images")
     .upload(imageName, newCabin.image);
