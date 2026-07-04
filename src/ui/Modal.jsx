@@ -11,6 +11,7 @@ import styled from "styled-components";
 import { createPortal } from "react-dom";
 
 import { keyframes } from "styled-components";
+import useClickOutside from "../hooks/useClickOutside";
 
 const popIn = keyframes`
   from {
@@ -94,20 +95,10 @@ function Open({ children, opens: nameOfTheWindowToOpen }) {
   });
 }
 function Window({ children, name }) {
-  const ref = useRef();
   const { openWindow, close } = useContext(modalContext);
+
   // handling clicking outside :)
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (ref.current && !ref.current.contains(event.target)) {
-        close();
-      }
-    }
-    document.addEventListener("click", handleClickOutside, true);
-    return () => {
-      document.removeEventListener("click", handleClickOutside, true);
-    };
-  }, [close]);
+  const ref = useClickOutside(close);
   //****** */
   if (name !== openWindow) {
     return null;

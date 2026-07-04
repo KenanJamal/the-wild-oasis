@@ -26,10 +26,7 @@ function ConfirmDelete({ resource, onConfirm, disabled, closeModal }) {
   return (
     <StyledConfirmDelete>
       <Heading type="h3">Delete {resource}</Heading>
-      <p>
-        Are you sure you want to delete this {resource} permanently? This action
-        cannot be undone.
-      </p>
+      <p>Are you sure you want to delete this {resource} permanently?</p>
 
       <div>
         <Button variation="secondary" onClick={closeModal}>
