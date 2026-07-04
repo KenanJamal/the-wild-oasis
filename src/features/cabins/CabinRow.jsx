@@ -9,6 +9,8 @@ import {
   TrashIcon,
 } from "@heroicons/react/16/solid";
 import { useCreateCabin } from "./useCreateCabin.js";
+import Modal from "../../ui/Modal.jsx";
+import ConfirmDelete from "../../ui/ConfirmDelete.jsx";
 // v1
 const TableRow = styled.div`
   display: grid;
@@ -51,7 +53,6 @@ const Discount = styled.div`
 `;
 
 function CabinRow({ cabin }) {
-  const [isEdiiting, setIsEditing] = useState(false);
   const { isDeleting, deleteCabinMutation } = useDeleteCabin();
   const { isCreating, createCabin } = useCreateCabin();
   const { id, name, image, maxCapacity, regularPrice, discount } = cabin;
@@ -73,18 +74,34 @@ function CabinRow({ cabin }) {
         <Price>{formatCurrency(regularPrice)}</Price>
         <Discount>{discount}%</Discount>
         <div>
-          <button onClick={() => setIsEditing((prev) => !prev)}>
-            <PencilIcon style={{ width: "1.8rem", height: "1.8rem" }} />
-          </button>
-          <button disabled={isDeleting} onClick={() => deleteCabinMutation(id)}>
-            <TrashIcon
-              style={{
-                width: "1.8rem",
-                height: "1.8rem",
-                color: "var(--color-red-700)",
-              }}
-            />
-          </button>
+          <Modal>
+            <Modal.Open opens={`edit-cabin`}>
+              <button>
+                <PencilIcon style={{ width: "1.8rem", height: "1.8rem" }} />
+              </button>
+            </Modal.Open>
+            <Modal.Window name={`edit-cabin`}>
+              <CreatCabinForm editingCabin={cabin} />
+            </Modal.Window>
+            <Modal.Open opens={`delete-cabin`}>
+              <button>
+                <TrashIcon
+                  style={{
+                    width: "1.8rem",
+                    height: "1.8rem",
+                    color: "var(--color-red-700)",
+                  }}
+                />
+              </button>
+            </Modal.Open>
+            <Modal.Window name={`delete-cabin`}>
+              <ConfirmDelete
+                resource="cabins"
+                onConfirm={() => deleteCabinMutation(id)}
+                disabled={isDeleting}
+              />
+            </Modal.Window>
+          </Modal>
           <button disabled={isCreating} onClick={() => handleDuplicate()}>
             <DocumentDuplicateIcon
               style={{ width: "1.8rem", height: "1.8rem" }}
@@ -92,7 +109,6 @@ function CabinRow({ cabin }) {
           </button>
         </div>
       </TableRow>
-      {isEdiiting && <CreatCabinForm editingCabin={cabin} />}
     </>
   );
 }
