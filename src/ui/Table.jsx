@@ -74,8 +74,15 @@ function Header({ children }) {
     </StyledHeader>
   );
 }
-function Body({ children }) {
-  return <StyledBody>{children}</StyledBody>;
+function Body({ data, render }) {
+  if (!data || data.length === 0) {
+    return (
+      <Empty>
+        No data available, Start by adding <h2>Some Cabins</h2>
+      </Empty>
+    );
+  }
+  return <StyledBody>{data.map((ele) => render(ele))}</StyledBody>;
 }
 function Row({ children }) {
   const { columns } = useContext(TableContext);
