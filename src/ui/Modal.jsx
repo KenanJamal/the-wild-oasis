@@ -100,6 +100,19 @@ function Window({ children, name }) {
   // handling clicking outside :)
   const ref = useClickOutside(close);
   //****** */
+  //handling escape key press to close the modal
+  useEffect(() => {
+    function handleKeyDown(event) {
+      if (event.key === "Escape") {
+        close();
+      }
+    }
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [close]);
+  //******** */
   if (name !== openWindow) {
     return null;
   }
