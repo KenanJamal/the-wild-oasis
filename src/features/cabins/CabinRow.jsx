@@ -73,10 +73,7 @@ function CabinRow({ cabin }) {
         <Price>{formatCurrency(regularPrice)}</Price>
         <Discount>{discount}%</Discount>
         <div>
-          <button
-            disabled={isEdiiting}
-            onClick={() => setIsEditing((prev) => !prev)}
-          >
+          <button onClick={() => setIsEditing((prev) => !prev)}>
             <PencilIcon style={{ width: "1.8rem", height: "1.8rem" }} />
           </button>
           <button disabled={isDeleting} onClick={() => deleteCabinMutation(id)}>
