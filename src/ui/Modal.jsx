@@ -1,5 +1,12 @@
 import { XMarkIcon } from "@heroicons/react/16/solid";
-import { cloneElement, createContext, useContext, useState } from "react";
+import {
+  cloneElement,
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import styled from "styled-components";
 import { createPortal } from "react-dom";
 
@@ -87,13 +94,27 @@ function Open({ children, opens: nameOfTheWindowToOpen }) {
   });
 }
 function Window({ children, name }) {
+  const ref = useRef();
   const { openWindow, close } = useContext(modalContext);
+  // handling clicking outside :)
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (ref.current && !ref.current.contains(event.target)) {
+        close();
+      }
+    }
+    document.addEventListener("click", handleClickOutside, true);
+    return () => {
+      document.removeEventListener("click", handleClickOutside, true);
+    };
+  }, [close]);
+  //****** */
   if (name !== openWindow) {
     return null;
   }
   return createPortal(
     <Overlay>
-      <StyledModal>
+      <StyledModal ref={ref}>
         <Button onClick={close}>
           <XMarkIcon />
         </Button>
