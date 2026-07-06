@@ -76,11 +76,7 @@ function Header({ children }) {
 }
 function Body({ data, render }) {
   if (!data || data.length === 0) {
-    return (
-      <Empty>
-        No data available, Start by adding <h2>Some Cabins</h2>
-      </Empty>
-    );
+    return <Empty>No data available</Empty>;
   }
   return <StyledBody>{data.map((ele) => render(ele))}</StyledBody>;
 }

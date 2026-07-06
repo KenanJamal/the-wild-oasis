@@ -64,7 +64,7 @@ function CabinRow({ cabin }) {
         <Cabin>{name}</Cabin>
         <div>Fits up to {maxCapacity}</div>
         <Price>{formatCurrency(regularPrice)}</Price>
-        <Discount>{discount}%</Discount>
+        <Discount>{discount ? `${discount}%` : "--"}</Discount>
         <div>
           {/* .............. */}
           <Modal>
@@ -100,27 +100,6 @@ function CabinRow({ cabin }) {
               />
             </Modal.Window>
           </Modal>
-          {/*  
-            <Modal.Open opens={`delete-cabin`}>
-              <button>
-                <TrashIcon
-                  style={{
-                    width: "1.8rem",
-                    height: "1.8rem",
-                    color: "var(--color-red-700)",
-                  }}
-                />
-              </button>
-            </Modal.Open>
-            <Modal.Window name={`delete-cabin`}>
-              <ConfirmDelete
-                resource="cabins"
-                onConfirm={() => deleteCabinMutation(id)}
-                disabled={isDeleting}
-              />
-            </Modal.Window> */}
-
-          {/* .............. */}
         </div>
       </Table.Row>
     </>

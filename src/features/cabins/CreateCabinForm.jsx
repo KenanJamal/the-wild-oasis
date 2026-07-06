@@ -91,7 +91,7 @@ function CreateCabinForm({ editingCabin = {}, onClose }) {
           })}
         />
       </FormRow>
-      <FormRow label="Discount" error={errors?.discount?.message}>
+      <FormRow label="Discount Percentage" error={errors?.discount?.message}>
         <Input
           type="number"
           id="discount"
