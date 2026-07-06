@@ -1,10 +1,11 @@
 import styled from "styled-components";
 import { formatCurrency } from "../../utils/helpers";
-import { useState } from "react";
 import CreatCabinForm from "./CreateCabinForm.jsx";
 import { useDeleteCabin } from "./useDeleteCabin.js";
 import {
   DocumentDuplicateIcon,
+  EllipsisHorizontalIcon,
+  EllipsisVerticalIcon,
   PencilIcon,
   TrashIcon,
 } from "@heroicons/react/16/solid";
@@ -12,6 +13,7 @@ import { useCreateCabin } from "./useCreateCabin.js";
 import Modal from "../../ui/Modal.jsx";
 import ConfirmDelete from "../../ui/ConfirmDelete.jsx";
 import Table from "../../ui/Table.jsx";
+import Menus from "../../ui/Menus.jsx";
 // v1
 
 const Img = styled.img`
@@ -64,15 +66,41 @@ function CabinRow({ cabin }) {
         <Price>{formatCurrency(regularPrice)}</Price>
         <Discount>{discount}%</Discount>
         <div>
+          {/* .............. */}
           <Modal>
-            <Modal.Open opens={`edit-cabin`}>
-              <button>
-                <PencilIcon style={{ width: "1.8rem", height: "1.8rem" }} />
-              </button>
-            </Modal.Open>
-            <Modal.Window name={`edit-cabin`}>
+            <Menus.Menu>
+              <Menus.Toggle id={cabin.id}>
+                <EllipsisHorizontalIcon />
+              </Menus.Toggle>
+              <Menus.List id={cabin.id}>
+                <Modal.Open opens="edit-cabin">
+                  <Menus.Button icon={<PencilIcon />}>Edit</Menus.Button>
+                </Modal.Open>
+                <Modal.Open opens="delete-cabin">
+                  <Menus.Button icon={<TrashIcon />}>Delete</Menus.Button>
+                </Modal.Open>
+                <Menus.Button
+                  icon={<DocumentDuplicateIcon />}
+                  onClick={handleDuplicate}
+                >
+                  Duplicate
+                </Menus.Button>
+              </Menus.List>
+            </Menus.Menu>
+
+            <Modal.Window name="edit-cabin">
               <CreatCabinForm editingCabin={cabin} />
             </Modal.Window>
+
+            <Modal.Window name="delete-cabin">
+              <ConfirmDelete
+                resource="cabins"
+                onConfirm={() => deleteCabinMutation(id)}
+                disabled={isDeleting}
+              />
+            </Modal.Window>
+          </Modal>
+          {/*  
             <Modal.Open opens={`delete-cabin`}>
               <button>
                 <TrashIcon
@@ -90,13 +118,9 @@ function CabinRow({ cabin }) {
                 onConfirm={() => deleteCabinMutation(id)}
                 disabled={isDeleting}
               />
-            </Modal.Window>
-          </Modal>
-          <button disabled={isCreating} onClick={() => handleDuplicate()}>
-            <DocumentDuplicateIcon
-              style={{ width: "1.8rem", height: "1.8rem" }}
-            />
-          </button>
+            </Modal.Window> */}
+
+          {/* .............. */}
         </div>
       </Table.Row>
     </>
