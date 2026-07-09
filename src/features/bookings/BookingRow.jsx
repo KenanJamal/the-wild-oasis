@@ -14,6 +14,7 @@ import { format, isToday } from "date-fns";
 import {
   ArrowDownOnSquareIcon,
   ArrowUpOnSquareIcon,
+  EllipsisVerticalIcon,
   EyeIcon,
   PencilIcon,
   TrashIcon,
@@ -104,29 +105,30 @@ function BookingRow({
 
       <Tag type={statusToTagName[status]}>{status.replace("-", " ")}</Tag>
       <Amount>{formatCurrency(totalPrice)}</Amount>
-      <Modal>
-        <Menus.Menu>
-          <Menus.Toggle id={bookingId} />
-          <Menus.List id={bookingId}>
-            <Menus.Button
-              onClick={() => navigate(`/bookings/${bookingId}`)}
-              icon={<EyeIcon />}
-            >
-              See details
-            </Menus.Button>
 
-            {status === "unconfirmed" && (
-              <Menus.Button
-                onClick={() => navigate(`/checkin/${bookingId}`)}
-                icon={<ArrowDownOnSquareIcon />}
-              >
-                Check in
-              </Menus.Button>
-            )}
-            <Menus.Button icon={<PencilIcon />}>Edit booking</Menus.Button>
-          </Menus.List>
-        </Menus.Menu>
-      </Modal>
+      <Menus.Menu>
+        <Menus.Toggle id={bookingId}>
+          <EllipsisVerticalIcon />
+        </Menus.Toggle>
+        <Menus.List id={bookingId}>
+          <Menus.Button
+            onClick={() => navigate(`/bookings/${bookingId}`)}
+            icon={<EyeIcon />}
+          >
+            See details
+          </Menus.Button>
+
+          {/* {status === "unconfirmed" && (
+            <Menus.Button
+              onClick={() => navigate(`/checkin/${bookingId}`)}
+              icon={<ArrowDownOnSquareIcon />}
+            >
+              Check in
+            </Menus.Button>
+          )} */}
+          <Menus.Button icon={<PencilIcon />}>Edit booking</Menus.Button>
+        </Menus.List>
+      </Menus.Menu>
     </Table.Row>
   );
 }
