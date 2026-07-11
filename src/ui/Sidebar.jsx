@@ -21,6 +21,7 @@ function Sidebar() {
     <StyledSidebar>
       <Logo />
       <MainNav />
+      <Uploader cabins={cabins} isLoading={isLoading} />
     </StyledSidebar>
   );
 }

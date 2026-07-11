@@ -12,7 +12,7 @@ import Modal from "../../ui/Modal";
 import ConfirmDelete from "../../ui/ConfirmDelete";
 
 // import { useCheckout } from 'features/check-in-out/useCheckout';
-// import { useDeleteBooking } from './useDeleteBooking';
+import { useDeleteBooking } from "./useDeleteBooking";
 import { useBooking } from "./useBooking";
 import { useMoveBack } from "../../hooks/useMoveBack";
 import ButtonText from "../../ui/ButtonText";
@@ -28,7 +28,7 @@ const HeadingGroup = styled.div`
 function BookingDetail() {
   const { booking, isLoading } = useBooking();
   const { checkout, isCheckingOut } = useCheckOut();
-
+  const { deleteBooking, isDeleting } = useDeleteBooking();
   const moveBack = useMoveBack();
   const navigate = useNavigate();
 
@@ -69,7 +69,21 @@ function BookingDetail() {
             Check out
           </Button>
         )}
-
+        <Modal>
+          <Modal.Open opens="delete-cabin">
+            <Button variation="danger">Delete</Button>
+          </Modal.Open>
+          <Modal.Window name="delete-cabin">
+            <ConfirmDelete
+              resource="bookings"
+              onConfirm={() => {
+                deleteBooking(bookingId);
+                navigate(-1);
+              }}
+              disabled={isDeleting}
+            />
+          </Modal.Window>
+        </Modal>
         <Button variation="secondary" onClick={moveBack}>
           Back
         </Button>
