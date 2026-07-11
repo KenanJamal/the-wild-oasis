@@ -19,6 +19,7 @@ import {
   PencilIcon,
   TrashIcon,
 } from "@heroicons/react/16/solid";
+import { useCheckOut } from "../check-in-out/useCheckOut";
 
 // v1
 // const TableRow = styled.div`
@@ -75,6 +76,7 @@ function BookingRow({
   },
 }) {
   const navigate = useNavigate();
+  const { checkout, isCheckingOut } = useCheckOut();
 
   const statusToTagName = {
     unconfirmed: "blue",
@@ -124,6 +126,15 @@ function BookingRow({
               icon={<ArrowDownOnSquareIcon />}
             >
               Check in
+            </Menus.Button>
+          )}
+          {status === "checked-in" && (
+            <Menus.Button
+              onClick={() => checkout({ bookingId })}
+              icon={<ArrowUpOnSquareIcon />}
+              disabled={isCheckingOut}
+            >
+              Check out
             </Menus.Button>
           )}
           {/* <Menus.Button icon={<PencilIcon />}>Edit booking</Menus.Button> */}
