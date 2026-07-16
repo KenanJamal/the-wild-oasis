@@ -19,3 +19,7 @@ export async function getCurrenUser() {
 
   return data?.user;
 }
+export async function logOut() {
+  const { error } = await supabase.auth.signOut();
+  if (error) throw new Error(error.message);
+}
