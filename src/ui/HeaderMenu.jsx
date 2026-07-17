@@ -4,6 +4,7 @@ import ButtonIcon from "./ButtonIcon";
 import { useNavigate } from "react-router-dom";
 import { UserIcon } from "@heroicons/react/20/solid";
 import UserAvatar from "../features/authentication/UserAvatar";
+import DarkModeToggle from "./DarkModeToggle";
 const StyledHeaderMenu = styled.ul`
   display: flex;
   justify-content: flex-end;
@@ -22,6 +23,9 @@ function HeaderMenu() {
         <ButtonIcon onClick={() => navigate("/account")}>
           <UserIcon />
         </ButtonIcon>
+      </li>
+      <li>
+        <DarkModeToggle />
       </li>
       <li>
         <LogOut />
