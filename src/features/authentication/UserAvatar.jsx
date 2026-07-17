@@ -24,8 +24,8 @@ const Avatar = styled.img`
 function UserAvatar() {
   const { user, isLoading } = useUser();
   if (isLoading) return null;
-  console.log(user);
-  const { full_name, avatar } = user.identities[0].identity_data;
+  // console.log(user);
+  const { full_name, avatar } = user.user_metadata;
 
   return (
     <StyledUserAvatar>
