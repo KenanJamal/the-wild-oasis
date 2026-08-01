@@ -44,10 +44,6 @@ function UpdateUserDataForm() {
 
   return (
     <Form onSubmit={handleSubmit}>
-      <FormRow label="Email address">
-        <Input value={email} disabled />
-      </FormRow>
-
       <FormRow label="Full name">
         <Input
           type="text"
@@ -55,6 +51,7 @@ function UpdateUserDataForm() {
           onChange={(e) => setFullName(e.target.value)}
           id="fullName"
           disabled={isUpdating}
+          defaultValue={fullName}
         />
       </FormRow>
 
