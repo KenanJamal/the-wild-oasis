@@ -10,6 +10,7 @@ import { formatCurrency } from "../../utils/helpers";
 function Stats({ bookings, confirmedStays, numDays, cabinCount }) {
   // 1.
   const numBookings = bookings.length;
+  console.log("numBookings", numBookings);
 
   // 2.
   const sales = bookings.reduce((acc, cur) => acc + cur.totalPrice, 0);
