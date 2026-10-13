@@ -10,7 +10,6 @@ export async function getCabins() {
 
   return data;
 }
-//https://jhievpobbtcffgbfwuou.supabase.co/storage/v1/object/public/cabins-images/cabin-001.jpg
 export async function insertCabin(newCabin, id) {
   const hasImagePath = newCabin.image?.startsWith?.(supabaseUrl);
   const imageName = `${Math.random()}-${newCabin.image.name}`.replaceAll(
