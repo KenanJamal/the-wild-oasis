@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { useUser } from "../features/authentication/useUser";
 import Spinner from "./Spinner";
-import { useEffect } from "react";
+import { useEffect, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 const FullPage = styled.div`
   height: 100vh;
@@ -9,7 +9,7 @@ const FullPage = styled.div`
   align-items: center;
   justify-content: center;
 `;
-function ProtectedRoute({ children }) {
+function ProtectedRoute({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const { isLoading, isAuthentcated } = useUser();
   useEffect(() => {
@@ -27,6 +27,7 @@ function ProtectedRoute({ children }) {
   if (isAuthentcated) {
     return children;
   }
+  return null;
 }
 
 export default ProtectedRoute;

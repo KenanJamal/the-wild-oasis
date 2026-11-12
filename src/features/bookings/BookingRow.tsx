@@ -17,6 +17,7 @@ import {
 } from "@heroicons/react/16/solid";
 import { useCheckOut } from "../check-in-out/useCheckOut";
 import { useDeleteBooking } from "./useDeleteBooking";
+import type { BookingListItem, BookingStatus, ColorName } from "../../types";
 
 const Cabin = styled.div`
   font-size: 1.6rem;
@@ -48,27 +49,27 @@ const Amount = styled.div`
 function BookingRow({
   booking: {
     id: bookingId,
-    created_at,
     startDate,
     endDate,
     numNights,
-    numGuests,
     totalPrice,
     status,
     guests: { fullName: guestName, email },
     cabins: { name: cabinName },
   },
+}: {
+  booking: BookingListItem;
 }) {
   const navigate = useNavigate();
   const { checkout, isCheckingOut } = useCheckOut();
   const { deleteBooking, isDeleting } = useDeleteBooking();
-  const statusToTagName = {
+  const statusToTagName: Record<BookingStatus, ColorName> = {
     unconfirmed: "blue",
     "checked-in": "green",
     "checked-out": "silver",
   };
   return (
-    <Table.Row role="row">
+    <Table.Row>
       <Modal>
         <Cabin>{cabinName}</Cabin>
 

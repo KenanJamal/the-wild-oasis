@@ -18,6 +18,7 @@ import { useMoveBack } from "../../hooks/useMoveBack";
 import ButtonText from "../../ui/ButtonText";
 import Empty from "../../ui/Empty";
 import { useCheckOut } from "../check-in-out/useCheckOut";
+import type { BookingStatus, ColorName } from "../../types";
 
 const HeadingGroup = styled.div`
   display: flex;
@@ -35,7 +36,7 @@ function BookingDetail() {
   if (isLoading) return <Spinner />;
   if (!booking) return <Empty resource="booking" />;
 
-  const statusToTagName = {
+  const statusToTagName: Record<BookingStatus, ColorName> = {
     unconfirmed: "blue",
     "checked-in": "green",
     "checked-out": "silver",
@@ -47,7 +48,7 @@ function BookingDetail() {
     <>
       <Row type="horizontal">
         <HeadingGroup>
-          <Heading type="h1">Booking #{bookingId}</Heading>
+          <Heading as="h1">Booking #{bookingId}</Heading>
           <Tag type={statusToTagName[status]}>{status.replace("-", " ")}</Tag>
         </HeadingGroup>
         <ButtonText onClick={moveBack}>&larr; Back</ButtonText>

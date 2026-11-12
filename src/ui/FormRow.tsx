@@ -1,6 +1,9 @@
+import { isValidElement, type ReactNode } from "react";
 import styled, { css } from "styled-components";
 
-const StyledFormRow = styled.div`
+type Orientation = "horizontal" | "vertical";
+
+const StyledFormRow = styled.div<{ orientation?: Orientation }>`
   display: grid;
   align-items: center;
 
@@ -45,10 +48,22 @@ const Error = styled.span`
   color: var(--color-red-700);
 `;
 
-function FormRow({ label, error, children, orientation }) {
+interface FormRowProps {
+  label?: string;
+  error?: string;
+  children: ReactNode;
+  orientation?: Orientation;
+}
+
+function FormRow({ label, error, children, orientation }: FormRowProps) {
+  // The label points at the id of the (single) input inside the row
+  const inputId = isValidElement<{ id?: string }>(children)
+    ? children.props.id
+    : undefined;
+
   return (
     <StyledFormRow orientation={orientation}>
-      {label && <Label htmlFor={children.props.id}>{label}</Label>}
+      {label && <Label htmlFor={inputId}>{label}</Label>}
       {children}
       {error && <Error>{error}</Error>}
     </StyledFormRow>

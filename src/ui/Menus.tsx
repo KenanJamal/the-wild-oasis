@@ -1,4 +1,12 @@
-import { createContext, useContext, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  type Dispatch,
+  type MouseEvent,
+  type ReactNode,
+  type SetStateAction,
+} from "react";
 import styled from "styled-components";
 import useClickOutside from "../hooks/useClickOutside";
 import { createPortal } from "react-dom";
@@ -28,7 +36,12 @@ const StyledToggle = styled.button`
   }
 `;
 
-const StyledList = styled.ul`
+interface Position {
+  x: number;
+  y: number;
+}
+
+const StyledList = styled.ul<{ position: Position }>`
   position: fixed;
 
   background-color: var(--color-grey-0);
@@ -63,11 +76,28 @@ const StyledButton = styled.button`
     transition: all 0.3s;
   }
 `;
-const MenuContext = createContext();
-function Menus({ children }) {
-  const [isOpen, setIsOpen] = useState("");
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const open = (prop) => setIsOpen(prop);
+// The id of the open menu, or "" when every menu is closed
+type MenuId = string | number;
+
+interface MenuContextValue {
+  isOpen: MenuId;
+  setIsOpen: Dispatch<SetStateAction<MenuId>>;
+  position: Position;
+  setPosition: Dispatch<SetStateAction<Position>>;
+  close: () => void;
+}
+
+const MenuContext = createContext<MenuContextValue | null>(null);
+
+function useMenuContext() {
+  const context = useContext(MenuContext);
+  if (!context) throw new Error("Menu components must be used inside <Menus>");
+  return context;
+}
+
+function Menus({ children }: { children: ReactNode }) {
+  const [isOpen, setIsOpen] = useState<MenuId>("");
+  const [position, setPosition] = useState<Position>({ x: 0, y: 0 });
   const close = () => setIsOpen("");
   return (
     <MenuContext.Provider
@@ -77,11 +107,15 @@ function Menus({ children }) {
     </MenuContext.Provider>
   );
 }
-function Toggle({ children, id }) {
-  const { isOpen, setIsOpen, setPosition, position, close } =
-    useContext(MenuContext);
-  function handleClick(e) {
-    const rect = e.target.getBoundingClientRect();
+interface ToggleProps {
+  children: ReactNode;
+  id: MenuId;
+}
+
+function Toggle({ children, id }: ToggleProps) {
+  const { isOpen, setIsOpen, setPosition, close } = useMenuContext();
+  function handleClick(e: MouseEvent<HTMLButtonElement>) {
+    const rect = e.currentTarget.getBoundingClientRect();
     setPosition({
       x: window.innerWidth - rect.width - rect.x,
       y: rect.y + rect.height + 8,
@@ -90,9 +124,9 @@ function Toggle({ children, id }) {
   }
   return <StyledToggle onClick={handleClick}>{children}</StyledToggle>;
 }
-function List({ children, id }) {
-  const { isOpen, position, close } = useContext(MenuContext);
-  const ref = useClickOutside(close);
+function List({ children, id }: ToggleProps) {
+  const { isOpen, position, close } = useMenuContext();
+  const ref = useClickOutside<HTMLUListElement>(close);
   if (isOpen !== id) return null;
   return createPortal(
     <StyledList ref={ref} position={position}>
@@ -101,14 +135,21 @@ function List({ children, id }) {
     document.body,
   );
 }
-function Button({ children, icon, onClick }) {
-  const { close } = useContext(MenuContext);
+interface ButtonProps {
+  children: ReactNode;
+  icon: ReactNode;
+  onClick?: () => void;
+  disabled?: boolean;
+}
+
+function Button({ children, icon, onClick, disabled }: ButtonProps) {
+  const { close } = useMenuContext();
   function handleClick() {
     onClick?.();
     close();
   }
   return (
-    <StyledButton onClick={handleClick}>
+    <StyledButton onClick={handleClick} disabled={disabled}>
       {icon}
       {children}
     </StyledButton>

@@ -1,7 +1,7 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/16/solid";
 import { useSearchParams } from "react-router-dom";
 import styled from "styled-components";
-import { PAGE_SIZE } from "../utils/constans.js";
+import { PAGE_SIZE } from "../utils/constans";
 
 const StyledPagination = styled.div`
   width: 100%;
@@ -10,21 +10,12 @@ const StyledPagination = styled.div`
   justify-content: space-between;
 `;
 
-const P = styled.p`
-  font-size: 1.4rem;
-  margin-left: 0.8rem;
-
-  & span {
-    font-weight: 600;
-  }
-`;
-
 const Buttons = styled.div`
   display: flex;
   gap: 0.6rem;
 `;
 
-const PaginationButton = styled.button`
+const PaginationButton = styled.button<{ active?: boolean }>`
   background-color: ${(props) =>
     props.active ? " var(--color-brand-600)" : "var(--color-grey-50)"};
   color: ${(props) => (props.active ? " var(--color-brand-50)" : "inherit")};
@@ -59,7 +50,7 @@ const PaginationButton = styled.button`
   }
 `;
 
-function Pagination({ count }) {
+function Pagination({ count }: { count: number }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const currentPage = !searchParams.get("page")
     ? 1
@@ -67,12 +58,12 @@ function Pagination({ count }) {
   const pageCount = Math.ceil(count / PAGE_SIZE);
   function nextPage() {
     const nextPage = currentPage === pageCount ? currentPage : currentPage + 1;
-    searchParams.set("page", nextPage);
+    searchParams.set("page", String(nextPage));
     setSearchParams(searchParams);
   }
   function previousPage() {
     const previousPage = currentPage === 1 ? currentPage : currentPage - 1;
-    searchParams.set("page", previousPage);
+    searchParams.set("page", String(previousPage));
     setSearchParams(searchParams);
   }
   if (pageCount <= 1) return null;

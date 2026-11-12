@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { useUser } from "./useUser";
+import type { UserMetadata } from "../../types";
 
 const StyledUserAvatar = styled.div`
   display: flex;
@@ -23,9 +24,9 @@ const Avatar = styled.img`
 
 function UserAvatar() {
   const { user, isLoading } = useUser();
-  if (isLoading) return null;
+  if (isLoading || !user) return null;
   // console.log(user);
-  const { full_name, avatar } = user.user_metadata;
+  const { full_name, avatar } = user.user_metadata as UserMetadata;
 
   return (
     <StyledUserAvatar>

@@ -1,6 +1,7 @@
 import styled from "styled-components";
+import type { ColorName } from "../types";
 
-const Tag = styled.span`
+const Tag = styled.span<{ type: ColorName }>`
   width: fit-content;
   text-transform: uppercase;
   font-size: 1.1rem;

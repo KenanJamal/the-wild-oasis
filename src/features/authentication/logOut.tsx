@@ -4,7 +4,7 @@ import { useLogOut } from "./useLogOut";
 function LogOut() {
   const { logOut, isLoading } = useLogOut();
   return (
-    <ButtonIcon onClick={logOut} disabled={isLoading}>
+    <ButtonIcon onClick={() => logOut()} disabled={isLoading}>
       <ArrowRightOnRectangleIcon />
     </ButtonIcon>
   );

@@ -50,8 +50,7 @@ function BookingTable() {
         
         <Table.Body
           data={bookings}
-          // Add the type annotation to the booking parameter here
-          render={(booking: Booking) => (
+          render={(booking) => (
             <BookingRow key={booking.id} booking={booking} />
           )}
         />

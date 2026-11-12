@@ -4,8 +4,9 @@ import {
   createContext,
   useContext,
   useEffect,
-  useRef,
   useState,
+  type ReactElement,
+  type ReactNode,
 } from "react";
 import styled from "styled-components";
 import { createPortal } from "react-dom";
@@ -77,32 +78,57 @@ const Button = styled.button`
     color: var(--color-grey-500);
   }
 `;
-const modalContext = createContext();
-function Modal({ children }) {
+interface ModalContextValue {
+  openWindow: string;
+  open: (name: string) => void;
+  close: () => void;
+}
+
+const modalContext = createContext<ModalContextValue | null>(null);
+
+function useModalContext() {
+  const context = useContext(modalContext);
+  if (!context) throw new Error("Modal components must be used inside <Modal>");
+  return context;
+}
+
+function Modal({ children }: { children: ReactNode }) {
   const [openWindow, setIsOpenWindow] = useState("");
   const close = () => setIsOpenWindow("");
-  const open = (name) => setIsOpenWindow(name);
+  const open = (name: string) => setIsOpenWindow(name);
   return (
     <modalContext.Provider value={{ openWindow, open, close }}>
       {children}
     </modalContext.Provider>
   );
 }
-function Open({ children, opens: nameOfTheWindowToOpen }) {
-  const { open } = useContext(modalContext);
+interface OpenProps {
+  // The element gets an onClick that opens the window
+  children: ReactElement<{ onClick?: () => void }>;
+  opens: string;
+}
+
+function Open({ children, opens: nameOfTheWindowToOpen }: OpenProps) {
+  const { open } = useModalContext();
   return cloneElement(children, {
     onClick: () => open(nameOfTheWindowToOpen),
   });
 }
-function Window({ children, name }) {
-  const { openWindow, close } = useContext(modalContext);
+interface WindowProps {
+  // The element gets an onClose prop to close the window from inside
+  children: ReactElement<{ onClose?: () => void }>;
+  name: string;
+}
+
+function Window({ children, name }: WindowProps) {
+  const { openWindow, close } = useModalContext();
 
   // handling clicking outside :)
-  const ref = useClickOutside(close);
+  const ref = useClickOutside<HTMLDivElement>(close);
   //****** */
   //handling escape key press to close the modal
   useEffect(() => {
-    function handleKeyDown(event) {
+    function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
         close();
       }

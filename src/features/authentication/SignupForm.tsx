@@ -1,4 +1,4 @@
-import { useForm } from "react-hook-form";
+import { useForm, type SubmitHandler } from "react-hook-form";
 import Button from "../../ui/Button";
 import Form from "../../ui/Form";
 import FormRow from "../../ui/FormRow";
@@ -7,19 +7,30 @@ import { useSignup } from "./useSignUp";
 
 // Email regex: /\S+@\S+\.\S+/
 
+interface SignupFormValues {
+  fullName: string;
+  email: string;
+  password: string;
+  passwordConfirm: string;
+}
+
 function SignupForm() {/*  */
   const { signup, isLoading } = useSignup();
-  const { register, formState, getValues, handleSubmit, reset } = useForm();
+  const { register, formState, getValues, handleSubmit, reset } = useForm<SignupFormValues>();
   const { errors } = formState;
 
-  function onSubmit({ fullName, email, password }) {
+  const onSubmit: SubmitHandler<SignupFormValues> = ({
+    fullName,
+    email,
+    password,
+  }) => {
     signup(
       { fullName, email, password },
       {
         onSettled: () => reset,
       },
     );
-  }
+  };
 
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
@@ -84,7 +95,7 @@ function SignupForm() {/*  */
           variation="secondary"
           type="reset"
           disabled={isLoading}
-          onClick={reset}
+          onClick={() => reset()}
         >
           Cancel
         </Button>

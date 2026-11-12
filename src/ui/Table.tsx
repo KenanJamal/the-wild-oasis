@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext, type ReactNode } from "react";
 import styled from "styled-components";
 
 const StyledTable = styled.div`
@@ -10,7 +10,7 @@ const StyledTable = styled.div`
   overflow: hidden;
 `;
 
-const CommonRow = styled.header`
+const CommonRow = styled.header<{ columns: string }>`
   display: grid;
   grid-template-columns: ${(props) => props.columns};
   column-gap: 2.4rem;
@@ -58,33 +58,55 @@ const Empty = styled.p`
   text-align: center;
   margin: 2.4rem;
 `;
-const TableContext = createContext();
-export default function Table({ columns, children }) {
+interface TableContextValue {
+  columns: string;
+}
+
+const TableContext = createContext<TableContextValue | null>(null);
+
+function useTableContext() {
+  const context = useContext(TableContext);
+  if (!context) throw new Error("Table components must be used inside <Table>");
+  return context;
+}
+
+interface TableProps {
+  // Value for grid-template-columns, shared by the header and every row
+  columns: string;
+  children: ReactNode;
+}
+
+export default function Table({ columns, children }: TableProps) {
   return (
     <TableContext.Provider value={{ columns }}>
       <StyledTable>{children}</StyledTable>
     </TableContext.Provider>
   );
 }
-function Header({ children }) {
-  const { columns } = useContext(TableContext);
+function Header({ children }: { children: ReactNode }) {
+  const { columns } = useTableContext();
   return (
     <StyledHeader as="header" columns={columns}>
       {children}
     </StyledHeader>
   );
 }
-function Body({ data, render }) {
+interface BodyProps<T> {
+  data: T[] | undefined;
+  render: (item: T) => ReactNode;
+}
+
+function Body<T>({ data, render }: BodyProps<T>) {
   if (!data || data.length === 0) {
     return <Empty>No data available</Empty>;
   }
   return <StyledBody>{data.map((ele) => render(ele))}</StyledBody>;
 }
-function Row({ children }) {
-  const { columns } = useContext(TableContext);
+function Row({ children }: { children: ReactNode }) {
+  const { columns } = useTableContext();
   return <StyledRow columns={columns}>{children}</StyledRow>;
 }
-function Footer({ children }) {
+function Footer({ children }: { children: ReactNode }) {
   return <StyledFooter>{children}</StyledFooter>;
 }
 Table.Header = Header;

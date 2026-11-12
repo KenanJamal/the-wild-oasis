@@ -1,18 +1,20 @@
-import styled from "styled-components";
 import Spinner from "../../ui/Spinner";
 import CabinRow from "./CabinRow";
-import { useCabins } from "./useCabins.js";
-import Table from "../../ui/Table.jsx";
-import Menus from "../../ui/Menus.jsx";
+import { useCabins } from "./useCabins";
+import Table from "../../ui/Table";
+import Menus from "../../ui/Menus";
+import Empty from "../../ui/Empty";
 import { useSearchParams } from "react-router-dom";
+import type { Cabin } from "../../types";
 
 function CabinTable() {
   const { isLoading, cabins } = useCabins();
   // filter
   const [searchParams] = useSearchParams();
   if (isLoading) return <Spinner />;
+  if (!cabins) return <Empty resource="cabins" />;
   const filteredValue = searchParams.get("discount") || "all";
-  let filteredCabins;
+  let filteredCabins: Cabin[] = [];
   if (filteredValue === "all") {
     filteredCabins = cabins;
   } else if (filteredValue === "no-discount") {
@@ -23,12 +25,15 @@ function CabinTable() {
   // sort
   const sortBy = searchParams.get("sortBy") || "startDate-asc";
   const [field, direction] = sortBy.split("-");
+  const sortField = field as keyof Cabin;
   const sortedCabins = filteredCabins.sort((a, b) => {
+    const valueA = a[sortField];
+    const valueB = b[sortField];
     let result;
-    if (typeof a[field] === "string") {
-      result = a[field].localeCompare(b[field]);
+    if (typeof valueA === "string" && typeof valueB === "string") {
+      result = valueA.localeCompare(valueB);
     } else {
-      result = a[field] - b[field];
+      result = Number(valueA) - Number(valueB);
     }
     return direction === "asc" ? result : -result;
   });

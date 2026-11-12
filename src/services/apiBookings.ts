@@ -1,9 +1,34 @@
+import type { TablesUpdate } from "../../database.types";
+import type {
+  Booking,
+  BookingDetails,
+  BookingListItem,
+  RecentBooking,
+  RecentStay,
+  TodayActivityBooking,
+} from "../types";
 import { getToday } from "../utils/helpers";
 import supabase from "./supabase";
-import { PAGE_SIZE } from "../utils/constans.js";
-export async function getBookings({ filter, sortBy, page }) {
-  let query;
-  query = supabase
+import { PAGE_SIZE } from "../utils/constans";
+
+export interface BookingsFilter {
+  field: keyof Booking;
+  value: string;
+}
+
+export interface BookingsSortBy {
+  field: keyof Booking;
+  direction: string;
+}
+
+interface GetBookingsParams {
+  filter: BookingsFilter | null;
+  sortBy: BookingsSortBy;
+  page: number;
+}
+
+export async function getBookings({ filter, sortBy, page }: GetBookingsParams) {
+  let query = supabase
     .from("bookings")
     .select(
       "id , startDate, endDate , numNights , numGuests , status ,totalPrice , cabins(name), guests(fullName ,email)",
@@ -22,7 +47,7 @@ export async function getBookings({ filter, sortBy, page }) {
     const to = from + PAGE_SIZE - 1;
     query = query.range(from, to);
   }
-  const { data, error, count } = await query;
+  const { data, error, count } = await query.returns<BookingListItem[]>();
 
   if (error) {
     console.error(error);
@@ -31,11 +56,12 @@ export async function getBookings({ filter, sortBy, page }) {
 
   return { data, count };
 }
-export async function getBooking(id) {
+export async function getBooking(id: number) {
   const { data, error } = await supabase
     .from("bookings")
     .select("*, cabins(*), guests(*)")
     .eq("id", id)
+    .returns<BookingDetails[]>()
     .single();
 
   if (error) {
@@ -46,12 +72,13 @@ export async function getBooking(id) {
   return data;
 }
 
-export async function getBookingsAfterDate(date) {
+export async function getBookingsAfterDate(date: string) {
   const { data, error } = await supabase
     .from("bookings")
     .select("created_at, totalPrice, extrasPrice")
     .gte("created_at", date)
-    .lte("created_at", getToday({ end: true }));
+    .lte("created_at", getToday({ end: true }))
+    .returns<RecentBooking[]>();
 
   if (error) {
     console.error(error);
@@ -62,13 +89,14 @@ export async function getBookingsAfterDate(date) {
 }
 
 // Returns all STAYS that are were created after the given date
-export async function getStaysAfterDate(date) {
+export async function getStaysAfterDate(date: string) {
   const { data, error } = await supabase
     .from("bookings")
     // .select('*')
     .select("*, guests(fullName)")
     .gte("startDate", date)
-    .lte("startDate", getToday());
+    .lte("startDate", getToday())
+    .returns<RecentStay[]>();
 
   if (error) {
     console.error(error);
@@ -85,7 +113,8 @@ export async function getStaysTodayActivity() {
     .or(
       `and(status.eq.unconfirmed,startDate.eq.${getToday()}),and(status.eq.checked-in,endDate.eq.${getToday()})`,
     )
-    .order("created_at");
+    .order("created_at")
+    .returns<TodayActivityBooking[]>();
 
   if (error) {
     console.error(error);
@@ -94,7 +123,7 @@ export async function getStaysTodayActivity() {
   return data;
 }
 
-export async function updateBooking(id, obj) {
+export async function updateBooking(id: number, obj: TablesUpdate<"bookings">) {
   const { data, error } = await supabase
     .from("bookings")
     .update(obj)
@@ -109,7 +138,7 @@ export async function updateBooking(id, obj) {
   return data;
 }
 
-export async function deleteBooking(id) {
+export async function deleteBooking(id: number) {
   // REMEMBER RLS POLICIES
   const { data, error } = await supabase.from("bookings").delete().eq("id", id);
 

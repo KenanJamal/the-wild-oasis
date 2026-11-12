@@ -1,6 +1,6 @@
-import { fi } from "date-fns/locale";
 import { useSearchParams } from "react-router-dom";
 import styled, { css } from "styled-components";
+import type { Option } from "../types";
 
 const StyledFilter = styled.div`
   border: 1px solid var(--color-grey-100);
@@ -12,7 +12,7 @@ const StyledFilter = styled.div`
   gap: 0.4rem;
 `;
 
-const FilterButton = styled.button`
+const FilterButton = styled.button<{ active: boolean }>`
   background-color: var(--color-grey-0);
   border: none;
 
@@ -35,13 +35,19 @@ const FilterButton = styled.button`
     color: var(--color-brand-50);
   }
 `;
-function Filter({ filterField, options }) {
+
+interface FilterProps {
+  filterField: string;
+  options: Option[];
+}
+
+function Filter({ filterField, options }: FilterProps) {
   const [searchParams, setSearchParams] = useSearchParams();
-  const currentFilter = searchParams.get(filterField) || options[0].value;
-  function handleClick(value) {
+  const currentFilter = searchParams.get(filterField) || options[0]?.value;
+  function handleClick(value: string) {
     searchParams.set(filterField, value);
     if (searchParams.get("page")) {
-      searchParams.set("page", 1);
+      searchParams.set("page", "1");
     }
     setSearchParams(searchParams);
   }

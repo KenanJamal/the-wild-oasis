@@ -5,6 +5,7 @@ import Tag from "../../ui/Tag";
 import Button from "../../ui/Button";
 import { Flag } from "../../ui/Flag";
 import CheckoutButton from "../check-in-out/CheckoutButton";
+import type { TodayActivityBooking } from "../../types";
 
 const StyledTodayItem = styled.li`
   display: grid;
@@ -25,7 +26,7 @@ const Guest = styled.div`
   font-weight: 500;
 `;
 
-function TodayItem({ activity }) {
+function TodayItem({ activity }: { activity: TodayActivityBooking }) {
   const { id, status, guests, numNights } = activity;
 
   return (
@@ -33,7 +34,7 @@ function TodayItem({ activity }) {
       {status === "unconfirmed" && <Tag type="green">Arriving</Tag>}
       {status === "checked-in" && <Tag type="blue">Departing</Tag>}
 
-      <Flag src={guests.countryFlag} alt={`Flag of ${guests.nationality}`} />
+      <Flag src={guests.countryFlag ?? undefined} alt={`Flag of ${guests.nationality}`} />
       <Guest>{guests.fullName}</Guest>
       <div>{numNights} nights</div>
 

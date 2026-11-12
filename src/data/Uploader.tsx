@@ -6,6 +6,8 @@ import { subtractDates } from "../utils/helpers";
 import { bookings } from "./data-bookings";
 import { cabins } from "./data-cabins";
 import { guests } from "./data-guests";
+import type { TablesInsert } from "../../database.types";
+import type { BookingStatus } from "../types";
 
 // const originalSettings = {
 //   minBookingLength: 3,
@@ -45,16 +47,17 @@ async function createBookings() {
     .from("guests")
     .select("id")
     .order("id");
-  const allGuestIds = guestsIds.map((cabin) => cabin.id);
+  const allGuestIds = (guestsIds ?? []).map((cabin) => cabin.id);
   const { data: cabinsIds } = await supabase
     .from("cabins")
     .select("id")
     .order("id");
-  const allCabinIds = cabinsIds.map((cabin) => cabin.id);
+  const allCabinIds = (cabinsIds ?? []).map((cabin) => cabin.id);
 
-  const finalBookings = bookings.map((booking) => {
+  const finalBookings = bookings.map((booking): TablesInsert<"bookings"> => {
     // Here relying on the order of cabins, as they don't have and ID yet
     const cabin = cabins.at(booking.cabinId - 1);
+    if (!cabin) throw new Error(`No sample cabin for cabinId ${booking.cabinId}`);
     const numNights = subtractDates(booking.endDate, booking.startDate);
     const cabinPrice = numNights * (cabin.regularPrice - cabin.discount);
     const extrasPrice = booking.hasBreakfast
@@ -62,7 +65,7 @@ async function createBookings() {
       : 0; // hardcoded breakfast price
     const totalPrice = cabinPrice + extrasPrice;
 
-    let status;
+    let status: BookingStatus | undefined;
     if (
       isPast(new Date(booking.endDate)) &&
       !isToday(new Date(booking.endDate))

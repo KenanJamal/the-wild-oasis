@@ -12,6 +12,12 @@ import {
 } from "recharts";
 import { useDarkMode } from "../../context/DarkModeContext";
 import { eachDayOfInterval, format, isSameDay, subDays } from "date-fns";
+import type { RecentBooking } from "../../types";
+
+interface SalesChartProps {
+  bookings: RecentBooking[];
+  numDays: number;
+}
 
 const StyledSalesChart = styled(DashboardBox)`
   grid-column: 1 / -1;
@@ -23,13 +29,12 @@ const StyledSalesChart = styled(DashboardBox)`
   }
 `;
 
-function SalesChart({ bookings, numDays }) {
+function SalesChart({ bookings, numDays }: SalesChartProps) {
   const { isDarkMode } = useDarkMode();
 
-  const allDates = eachDayOfInterval({
-    start: subDays(new Date(), numDays - 1),
-    end: new Date(),
-  });
+  const startDate = subDays(new Date(), numDays - 1);
+  const endDate = new Date();
+  const allDates = eachDayOfInterval({ start: startDate, end: endDate });
 
   const data = allDates.map((date) => {
     return {
@@ -60,8 +65,8 @@ function SalesChart({ bookings, numDays }) {
   return (
     <StyledSalesChart>
       <Heading as="h2">
-        Sales from {format(allDates.at(0), "MMM dd yyyy")} &mdash;{" "}
-        {format(allDates.at(-1), "MMM dd yyyy")}{" "}
+        Sales from {format(startDate, "MMM dd yyyy")} &mdash;{" "}
+        {format(endDate, "MMM dd yyyy")}{" "}
       </Heading>
 
       <ResponsiveContainer height={300} width="100%">

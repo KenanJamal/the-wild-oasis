@@ -13,7 +13,7 @@ export function useLogOut() {
       toast.success("Logged out successfully");
       navigate("/login", { replace: true });
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       toast.error(error.message);
     },
   });

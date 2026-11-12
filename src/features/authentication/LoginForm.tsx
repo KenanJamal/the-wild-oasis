@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import Button from "../../ui/Button";
 import Form from "../../ui/Form";
 import SpinnerMini from "../../ui/SpinnerMini";
@@ -10,7 +10,7 @@ function LoginForm() {
   const [email, setEmail] = useState("mekaye7626@comzx.com");
   const [password, setPassword] = useState("potato404");
   const { login, isLoading } = useLogin();
-  function handleSubmit(e) {
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!email || !password) {
       return;

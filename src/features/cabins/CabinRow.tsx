@@ -1,19 +1,19 @@
 import styled from "styled-components";
 import { formatCurrency } from "../../utils/helpers";
-import CreatCabinForm from "./CreateCabinForm.jsx";
-import { useDeleteCabin } from "./useDeleteCabin.js";
+import CreatCabinForm from "./CreateCabinForm";
+import { useDeleteCabin } from "./useDeleteCabin";
 import {
   DocumentDuplicateIcon,
   EllipsisHorizontalIcon,
-  EllipsisVerticalIcon,
   PencilIcon,
   TrashIcon,
 } from "@heroicons/react/16/solid";
-import { useCreateCabin } from "./useCreateCabin.js";
-import Modal from "../../ui/Modal.jsx";
-import ConfirmDelete from "../../ui/ConfirmDelete.jsx";
-import Table from "../../ui/Table.jsx";
-import Menus from "../../ui/Menus.jsx";
+import { useCreateCabin } from "./useCreateCabin";
+import Modal from "../../ui/Modal";
+import ConfirmDelete from "../../ui/ConfirmDelete";
+import Table from "../../ui/Table";
+import Menus from "../../ui/Menus";
+import type { Cabin as CabinType } from "../../types";
 // v1
 
 const Img = styled.img`
@@ -44,10 +44,11 @@ const Discount = styled.div`
   color: var(--color-green-700);
 `;
 
-function CabinRow({ cabin }) {
+function CabinRow({ cabin }: { cabin: CabinType }) {
   const { isDeleting, deleteCabinMutation } = useDeleteCabin();
-  const { isCreating, createCabin } = useCreateCabin();
-  const { id, name, image, maxCapacity, regularPrice, discount } = cabin;
+  const { createCabin } = useCreateCabin();
+  const { id, name, image, maxCapacity, regularPrice, discount, description } =
+    cabin;
   function handleDuplicate() {
     createCabin({
       name: `Copy of ${name}`,
@@ -55,6 +56,7 @@ function CabinRow({ cabin }) {
       maxCapacity,
       regularPrice,
       discount,
+      description,
     });
   }
   return (

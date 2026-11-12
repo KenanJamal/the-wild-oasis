@@ -1,4 +1,8 @@
-import { useForm } from "react-hook-form";
+import {
+  useForm,
+  type FieldErrors,
+  type SubmitHandler,
+} from "react-hook-form";
 
 import FormRow from "../../ui/FormRow";
 import Input from "../../ui/Input";
@@ -8,20 +12,33 @@ import FileInput from "../../ui/FileInput";
 import { Textarea } from "../../ui/Textarea";
 import { useEditCabins } from "./useEditCabins";
 import { useCreateCabin } from "./useCreateCabin";
+import type { Cabin } from "../../types";
 
-function CreateCabinForm({ editingCabin = {}, onClose }) {
+// The file input gives a FileList; when editing, image starts as the current image URL
+type CabinFormValues = Omit<Cabin, "id" | "created_at" | "image"> & {
+  image: FileList | string;
+};
+
+interface CreateCabinFormProps {
+  editingCabin?: Partial<Cabin>;
+  // Injected by Modal.Window when the form is shown in a modal
+  onClose?: () => void;
+}
+
+function CreateCabinForm({ editingCabin = {}, onClose }: CreateCabinFormProps) {
   const { editCabin, isEditing } = useEditCabins();
   const { createCabin, isCreating } = useCreateCabin();
   const { id: editId, ...editValues } = editingCabin;
   const isWorking = isCreating || isEditing;
 
   const edittingSession = Boolean(editId);
-  const { register, handleSubmit, reset, formState } = useForm({
+  const { register, handleSubmit, reset, formState } = useForm<CabinFormValues>({
     defaultValues: edittingSession ? editValues : {},
   });
   const { errors } = formState;
-  function handleSubmitForm(data) {
+  const handleSubmitForm: SubmitHandler<CabinFormValues> = (data) => {
     const image = typeof data.image === "string" ? data.image : data.image[0];
+    if (!image) return;
     if (!edittingSession)
       createCabin(
         { ...data, image },
@@ -32,7 +49,7 @@ function CreateCabinForm({ editingCabin = {}, onClose }) {
           },
         },
       );
-    else {
+    else if (editId) {
       editCabin(
         { newCabinData: { ...data, image }, id: editId },
         {
@@ -43,8 +60,8 @@ function CreateCabinForm({ editingCabin = {}, onClose }) {
         },
       );
     }
-  }
-  function onError(errors) {
+  };
+  function onError(errors: FieldErrors<CabinFormValues>) {
     console.log(errors);
   }
   return (
@@ -109,7 +126,6 @@ function CreateCabinForm({ editingCabin = {}, onClose }) {
         error={errors?.description?.message}
       >
         <Textarea
-          type="text"
           id="description"
           disabled={isWorking}
           {...register("description", {
@@ -133,7 +149,6 @@ function CreateCabinForm({ editingCabin = {}, onClose }) {
             onClose?.();
           }}
           variation="secondary"
-          type="button"
           type="reset"
         >
           Cancel

@@ -6,8 +6,16 @@ import {
 } from "react-icons/hi2";
 import Stat from "./Stat";
 import { formatCurrency } from "../../utils/helpers";
+import type { RecentBooking, RecentStay } from "../../types";
 
-function Stats({ bookings, confirmedStays, numDays, cabinCount }) {
+interface StatsProps {
+  bookings: RecentBooking[];
+  confirmedStays: RecentStay[];
+  numDays: number;
+  cabinCount: number;
+}
+
+function Stats({ bookings, confirmedStays, numDays, cabinCount }: StatsProps) {
   // 1.
   const numBookings = bookings.length;
   console.log("numBookings", numBookings);

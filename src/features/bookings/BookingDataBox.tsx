@@ -12,6 +12,7 @@ import {
 } from "react-icons/hi2";
 import DataItem from "../../ui/DataItem";
 import { Flag } from "../../ui/Flag";
+import type { BookingDetails } from "../../types";
 
 const StyledBookingDataBox = styled.section`
   background-color: var(--color-grey-0);
@@ -70,7 +71,7 @@ const Guest = styled.div`
   }
 `;
 
-const Price = styled.div`
+const Price = styled.div<{ isPaid: boolean }>`
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -103,7 +104,7 @@ const Footer = styled.footer`
   text-align: right;
 `;
 
-function BookingDataBox({ booking }) {
+function BookingDataBox({ booking }: { booking: BookingDetails }) {
   const {
     created_at,
     startDate,
@@ -116,7 +117,13 @@ function BookingDataBox({ booking }) {
     hasBreakfast,
     observations,
     isPaid,
-    guests: { fullName: guestName, email, country, countryFlag, nationalID },
+    guests: {
+      fullName: guestName,
+      email,
+      nationality,
+      countryFlag,
+      nationalID,
+    },
     cabins: { name: cabinName },
   } = booking;
 
@@ -141,7 +148,7 @@ function BookingDataBox({ booking }) {
 
       <Section>
         <Guest>
-          {countryFlag && <Flag src={countryFlag} alt={`Flag of ${country}`} />}
+          {countryFlag && <Flag src={countryFlag} alt={`Flag of ${nationality}`} />}
           <p>
             {guestName} {numGuests > 1 ? `+ ${numGuests - 1} guests` : ""}
           </p>

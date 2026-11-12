@@ -1,6 +1,10 @@
+import type { ComponentPropsWithoutRef } from "react";
 import styled from "styled-components";
+import type { Option } from "../types";
 
-const StyledSelect = styled.select`
+type SelectType = "white";
+
+const StyledSelect = styled.select<{ type?: SelectType }>`
   font-size: 1.4rem;
   padding: 0.8rem 1.2rem;
   border: 1px solid
@@ -13,7 +17,12 @@ const StyledSelect = styled.select`
   font-weight: 500;
   box-shadow: var(--shadow-sm);
 `;
-function Select({ options, onChange, value, ...props }) {
+interface SelectProps extends ComponentPropsWithoutRef<"select"> {
+  options: Option[];
+  type?: SelectType;
+}
+
+function Select({ options, onChange, value, ...props }: SelectProps) {
   return (
     <StyledSelect value={value} {...props} onChange={onChange}>
       {options.map((option) => (

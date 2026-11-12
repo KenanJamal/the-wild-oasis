@@ -1,7 +1,7 @@
-import Heading from "../ui/Heading.tsx";
-import Row from "../ui/Row.tsx";
-import BookingsTable from "../features/bookings/BookingTable.tsx";
-import BookingsTableOperations from "../features/bookings/BookingTableOperations.jsx";
+import Heading from "../ui/Heading";
+import Row from "../ui/Row";
+import BookingsTable from "../features/bookings/BookingTable";
+import BookingsTableOperations from "../features/bookings/BookingTableOperations";
 
 function Bookings() {
   return (

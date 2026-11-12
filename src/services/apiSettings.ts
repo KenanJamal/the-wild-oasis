@@ -1,7 +1,13 @@
+import type { TablesUpdate } from "../../database.types";
+import type { Settings } from "../types";
 import supabase from "./supabase";
 
 export async function getSettings() {
-  const { data, error } = await supabase.from("settings").select("*").single();
+  const { data, error } = await supabase
+    .from("settings")
+    .select("*")
+    .returns<Settings[]>()
+    .single();
 
   if (error) {
     console.error(error);
@@ -11,7 +17,7 @@ export async function getSettings() {
 }
 
 // We expect a newSetting object that looks like {setting: newValue}
-export async function updateSetting(newSetting) {
+export async function updateSetting(newSetting: TablesUpdate<"settings">) {
   const { data, error } = await supabase
     .from("settings")
     .update(newSetting)

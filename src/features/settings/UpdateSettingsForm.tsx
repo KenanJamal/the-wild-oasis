@@ -1,3 +1,4 @@
+import type { FocusEvent } from "react";
 import Form from "../../ui/Form";
 import FormRow from "../../ui/FormRow";
 import Input from "../../ui/Input";
@@ -5,23 +6,23 @@ import { useSettings } from "./useSettings";
 import Spinner from "../../ui/Spinner";
 import { useEditSettings } from "./useEditSettings";
 
+type SettingField =
+  | "minBookingLength"
+  | "maxBookingLeng"
+  | "maxGuestsPerBooking"
+  | "breakfastPrice";
+
 function UpdateSettingsForm() {
-  const {
-    isLoading,
-    error,
-    settings: {
-      minBookingLength,
-      maxBookingLeng,
-      maxGuestsPerBooking,
-      breakfastPrice,
-    } = {},
-  } = useSettings();
+  const { isLoading, settings } = useSettings();
   const { isEditing, updateSettings } = useEditSettings();
   if (isLoading) return <Spinner />;
-  function handleChangedSetting(e, field) {
+  function handleChangedSetting(
+    e: FocusEvent<HTMLInputElement>,
+    field: SettingField,
+  ) {
     const { value } = e.target;
     if (!value) return;
-    updateSettings({ [field]: value });
+    updateSettings({ [field]: Number(value) });
   }
   return (
     <Form>
@@ -30,7 +31,7 @@ function UpdateSettingsForm() {
           disabled={isEditing}
           type="number"
           id="min-nights"
-          defaultValue={minBookingLength}
+          defaultValue={settings?.minBookingLength}
           onBlur={(e) => handleChangedSetting(e, "minBookingLength")}
         />
       </FormRow>
@@ -39,7 +40,7 @@ function UpdateSettingsForm() {
           disabled={isEditing}
           type="number"
           id="max-nights"
-          defaultValue={maxBookingLeng}
+          defaultValue={settings?.maxBookingLeng}
           onBlur={(e) => handleChangedSetting(e, "maxBookingLeng")}
         />
       </FormRow>
@@ -48,7 +49,7 @@ function UpdateSettingsForm() {
           disabled={isEditing}
           type="number"
           id="max-guests"
-          defaultValue={maxGuestsPerBooking}
+          defaultValue={settings?.maxGuestsPerBooking}
           onBlur={(e) => handleChangedSetting(e, "maxGuestsPerBooking")}
         />
       </FormRow>
@@ -57,7 +58,7 @@ function UpdateSettingsForm() {
           disabled={isEditing}
           type="number"
           id="breakfast-price"
-          defaultValue={breakfastPrice}
+          defaultValue={settings?.breakfastPrice}
           onBlur={(e) => handleChangedSetting(e, "breakfastPrice")}
         />
       </FormRow>
